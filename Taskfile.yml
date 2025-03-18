@@ -1,0 +1,18 @@
+version: "3"
+
+vars: {}
+
+env: {}
+
+tasks:
+  virtualenv:
+    cmds:
+      - uv sync
+
+  run:
+    cmds:
+      - uv run main.py
+
+  clean:
+    cmds:
+      - rm -rf reports/*
