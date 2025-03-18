@@ -6,13 +6,19 @@ env: {}
 
 tasks:
   virtualenv:
+    desc: Synchronize Python virtual environment using uv package manager
     cmds:
       - uv sync
 
   run:
+    deps:
+      - virtualenv
+    desc: Execute the main.py script to generate data profiling reports
     cmds:
       - uv run main.py
 
   clean:
+    desc: Remove all generated reports from the reports directory
     cmds:
-      - rm -rf reports/*
+      - cmd: rm -rf reports/*
+        ignore_error: true
