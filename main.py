@@ -99,10 +99,13 @@ def generate_profiling_reports(
             )
 
             profile = ProfileReport(df, title="Profile Report - %s" % table_name)
-            output_file = output_dir / f"{table_name}_profile.html"
-            profile.to_file(output_file)
+            output_file_html = output_dir / f"{table_name}_profile.html"
+            output_file_json = output_dir / f"{table_name}_profile.json"
+            profile.to_file(output_file_html)
+            profile.to_file(output_file_json)
             progress.update(task, description=f"Generated report for {table_name}")
-            logger.info("Report saved to: %s", output_file)
+            logger.info("Report saved to: %s", output_file_html)
+            logger.info("JSON report saved to: %s", output_file_json)
 
 
 def find_data_files(directory: Path, extensions: List[str]) -> List[Path]:
