@@ -494,6 +494,12 @@ wheels = [
 ]
 
 [[package]]
+name = "mdutils"
+version = "1.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/ec/6240f147530a2c8d362ed3f2f7985aca92cda68c25ffc2fc216504b17148/mdutils-1.6.0.tar.gz", hash = "sha256:647f3cf00df39fee6c57fa6738dc1160fce1788276b5530c87d43a70cdefdaf1", size = 22881 }
+
+[[package]]
 name = "multimethod"
 version = "1.12"
 source = { registry = "https://pypi.org/simple" }
@@ -942,6 +948,7 @@ name = "relife-data-structure"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "mdutils" },
     { name = "pandas" },
     { name = "rich" },
     { name = "setuptools" },
@@ -956,6 +963,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "mdutils", specifier = ">=1.6.0" },
     { name = "pandas", specifier = ">=2.1.0" },
     { name = "rich", specifier = ">=13.7.0" },
     { name = "setuptools", specifier = ">=69.0.0" },
