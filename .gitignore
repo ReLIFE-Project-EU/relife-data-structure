@@ -3,6 +3,8 @@
 
 reports
 .vscode
+.claude
+TEMP-*.md
 
 ## Python
 #########
