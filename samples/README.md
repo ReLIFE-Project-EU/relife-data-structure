@@ -1,6 +1,6 @@
-### Sample datasets overview
+# Sample datasets overview
 
-### belgium_electricity_smartmeter_sample.sqlite
+## `belgium_electricity_smartmeter_sample.sqlite`
 
 - **format**: SQLite database
 - **tables**:
@@ -21,7 +21,7 @@
   - Indicators are stored as 0/1 values.
   - Timestamps in samples appear in ISO 8601 with `Z` suffix.
 
-### belgium_gasmeter_sample.sqlite
+## `belgium_gasmeter_sample.sqlite`
 
 - **format**: SQLite database
 - **tables**:
@@ -38,7 +38,7 @@
 - **notes**:
   - Hourly intervals indicated by start and end timestamps.
 
-### croatia_public_buildings.sqlite
+## `croatia_public_buildings.sqlite`
 
 - **format**: SQLite database
 - **tables**:
@@ -60,7 +60,7 @@
 - **notes**:
   - Units vary by energy source; both quantity and normalized kWh are present.
 
-### longtable_capex.xlsx
+## `longtable_capex.xlsx`
 
 - **format**: Excel workbook
 - **sheets**: `Tabelle1`, `microsoft.com:RD`, `microsoft.com:Single`, `microsoft.com:FV`, `microsoft.com:CNMTM`, `microsoft.com:LET_WF`, `microsoft.com:LAMBDA_WF`, `microsoft.com:ARRAYTEXT_WF`
