@@ -362,6 +362,7 @@ def sample_sqlite(
     ratio: Optional[float],
     include_indexes: bool,
     min_rows_per_table: int,
+    max_rows_per_table: Optional[int],
     max_iterations: int,
     verbose_sql: bool,
 ) -> None:
@@ -379,6 +380,9 @@ def sample_sqlite(
             is provided.
         include_indexes: Whether to recreate indexes in the sampled database.
         min_rows_per_table: Minimum number of rows to include for non-empty tables.
+        max_rows_per_table: Optional approximate cap of rows per table. When set,
+            each table's planned rows are further limited to this many. This cap
+            may override the minimum when both are provided.
         max_iterations: Max attempts to adjust ratio when targeting size.
         verbose_sql: When True, logs generated SQL statements.
     """
@@ -389,6 +393,8 @@ def sample_sqlite(
         raise ValueError("Either --target-size-mb or --ratio must be provided")
     if ratio is not None and not (0.0 < ratio <= 1.0):
         raise ValueError("--ratio must be in (0, 1]")
+    if max_rows_per_table is not None and max_rows_per_table < 1:
+        raise ValueError("--max-rows-per-table must be >= 1 when provided")
 
     src_size_bytes = source_db.stat().st_size
 
@@ -446,6 +452,8 @@ def sample_sqlite(
                         math.ceil(total * ratio_est),
                     ),
                 )
+                if max_rows_per_table is not None:
+                    take = min(take, max_rows_per_table)
                 planned_counts[t] = (total, take)
 
             # Insert per order
@@ -501,6 +509,111 @@ def sample_sqlite(
         # Be a bit conservative to avoid oscillation
         ratio_est = max(0.00005, min(1.0, ratio_est * shrink_factor * 0.95))
 
+    # Final overview of the resulting sample
+    _log_output_overview(output_db)
+
+
+def _safe_fetchone_int(cursor: sqlite3.Cursor) -> Optional[int]:
+    """Fetch a single integer from a cursor."""
+
+    row = cursor.fetchone()
+
+    if not row:
+        return None
+
+    try:
+        return int(row[0]) if row[0] is not None else None
+    except Exception:
+        return None
+
+
+def _log_output_overview(db_path: Path) -> None:
+    """Log an overview of the resulting SQLite sample.
+
+    Shows number of tables, total size, and per-table row counts and sizes
+    (when the `dbstat` virtual table is available).
+    """
+
+    try:
+        conn = sqlite3.connect(db_path)
+    except Exception as exc:
+        logger.warning("Could not open output DB for overview: %s", exc)
+        return
+
+    try:
+        cur = conn.cursor()
+
+        # Total file size via PRAGMA for portability
+        cur.execute("PRAGMA page_size")
+        page_size = _safe_fetchone_int(cur) or 0
+        cur.execute("PRAGMA page_count")
+        page_count = _safe_fetchone_int(cur) or 0
+        total_bytes = page_size * page_count
+
+        # Tables list from main schema
+        tables = get_user_tables(cur, "main")
+        num_tables = len(tables)
+
+        # Attempt per-table sizes via dbstat; gracefully degrade if unavailable
+        dbstat_available = True
+        try:
+            cur.execute("SELECT 1 FROM dbstat LIMIT 1")
+            _ = cur.fetchone()
+        except sqlite3.OperationalError:
+            dbstat_available = False
+
+        table_summaries: List[Tuple[str, int, Optional[int]]] = []
+        for t in tables:
+            # Row count
+            rows = get_row_count(cur, "main", t)
+
+            # Size in bytes (if dbstat is available)
+            size_bytes: Optional[int] = None
+            if dbstat_available:
+                try:
+                    cur.execute("SELECT sum(pgsize) FROM dbstat WHERE name = ?", (t,))
+                    size_bytes = _safe_fetchone_int(cur)
+                except sqlite3.OperationalError:
+                    # Some SQLite builds may not expose pgsize; ignore sizing gracefully
+                    size_bytes = None
+
+            table_summaries.append((t, rows, size_bytes))
+
+        # Sort tables by size desc when available, otherwise by rows desc
+        def _sort_key(item: Tuple[str, int, Optional[int]]):
+            name, rows, size_opt = item
+            return (-(size_opt or -1), -rows, name)
+
+        table_summaries.sort(key=_sort_key)
+
+        # Header
+        total_mb = total_bytes / (1024 * 1024) if total_bytes else 0.0
+        logger.info(
+            "Overview of output sample: %d tables, total size %.2f MB",
+            num_tables,
+            total_mb,
+        )
+
+        # Per-table lines
+        for name, rows, size_opt in table_summaries:
+            if size_opt is not None and total_bytes:
+                size_mb = size_opt / (1024 * 1024)
+                pct = (size_opt / total_bytes) * 100.0
+                logger.info(
+                    "  - %s: %d rows, ~%.2f MB (%.1f%%)", name, rows, size_mb, pct
+                )
+            else:
+                logger.info("  - %s: %d rows", name, rows)
+
+        if not dbstat_available:
+            logger.info(
+                "Per-table size not available (SQLite build without dbstat). Showing row counts only."
+            )
+    except Exception as exc:
+        logger.warning("Failed to build overview: %s", exc)
+    finally:
+        conn.close()
+
 
 def quote_string(value: str) -> str:
     """Return a safely quoted SQL string literal for ATTACH statements."""
@@ -534,6 +647,15 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         type=int,
         default=1,
         help="Minimum rows to include per non-empty table",
+    )
+
+    parser.add_argument(
+        "--max-rows-per-table",
+        type=int,
+        default=int(1e5),
+        help=(
+            "Approximate cap of rows to include per table (overrides minimum when smaller)"
+        ),
     )
 
     parser.add_argument(
@@ -574,6 +696,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             ratio=args.ratio,
             include_indexes=args.include_indexes,
             min_rows_per_table=args.min_rows_per_table,
+            max_rows_per_table=args.max_rows_per_table,
             max_iterations=args.max_iterations,
             verbose_sql=args.verbose_sql,
         )
