@@ -1,3 +1,8 @@
+"""
+A script to sample a SQLite database so the entire database
+does not need to be uploaded to Git for profiling purposes.
+"""
+
 import argparse
 import logging
 import math
@@ -7,49 +12,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, cast
 
-try:
-    from rich.console import Console
-    from rich.logging import RichHandler
+from rich.console import Console
 
-    _RICH = True
-except Exception:
-    _RICH = False
+from logging_setup import configure_logging as _configure_logging
 
-
-LOGGER = logging.getLogger("sqlite_sampler")
+logger = logging.getLogger(__name__)
 
 
 def configure_logging(verbose: bool) -> None:
-    """Configure logging for the CLI.
+    """Configure logging for the CLI using shared setup."""
 
-    Uses Rich for human-friendly logs when available, otherwise falls back to
-    the standard logging configuration.
-
-    Args:
-        verbose: When True, sets log level to DEBUG; otherwise INFO.
-    """
-
-    level = logging.DEBUG if verbose else logging.INFO
-
-    if _RICH:
-        console = Console()
-        logging.basicConfig(
-            level=level,
-            format="%(message)s",
-            datefmt="[%X]",
-            handlers=[
-                RichHandler(
-                    rich_tracebacks=True,
-                    markup=True,
-                    console=console,
-                )
-            ],
-        )
-    else:  # Fallback to basic logging
-        logging.basicConfig(
-            level=level,
-            format="%(asctime)s - %(levelname)s - %(message)s",
-        )
+    _configure_logging(verbose=verbose, console=Console())
 
 
 @dataclass
@@ -373,7 +346,7 @@ def insert_sample_for_table(
     )
 
     if verbose_sql:
-        LOGGER.debug("SQL for %s:\n%s", table, sql)
+        logger.debug("SQL for %s:\n%s", table, sql)
 
     cur = dest.cursor()
     cur.execute(sql)
@@ -435,7 +408,7 @@ def sample_sqlite(
         if output_db.exists():
             output_db.unlink()
 
-        LOGGER.info(
+        logger.info(
             "Creating sample (attempt %d) with ratio ~ %.4f", attempt, ratio_est
         )
 
@@ -479,7 +452,7 @@ def sample_sqlite(
             for t in order:
                 total, take = planned_counts[t]
                 if total == 0 or take == 0:
-                    LOGGER.debug("%s: no rows to copy", t)
+                    logger.debug("%s: no rows to copy", t)
                     continue
                 inserted = insert_sample_for_table(
                     dest,
@@ -488,7 +461,7 @@ def sample_sqlite(
                     fk_map.get(t, []),
                     verbose_sql=verbose_sql,
                 )
-                LOGGER.info(
+                logger.info(
                     "%s: inserted %d / planned %d (source %d)", t, inserted, take, total
                 )
 
@@ -508,14 +481,14 @@ def sample_sqlite(
             break
 
         out_size = output_db.stat().st_size
-        LOGGER.info(
+        logger.info(
             "Output DB size: %.2f MB (target %.2f MB)",
             out_size / (1024 * 1024),
             desired_bytes / (1024 * 1024),
         )
         if out_size <= desired_bytes or attempt >= max_iterations:
             if out_size > desired_bytes:
-                LOGGER.warning(
+                logger.warning(
                     "Sample remains above target after %d attempts (%.2f MB > %.2f MB). Keeping latest sample.",
                     attempt,
                     out_size / (1024 * 1024),
@@ -605,7 +578,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             verbose_sql=args.verbose_sql,
         )
     except Exception as exc:
-        LOGGER.exception("Failed to sample database: %s", exc)
+        logger.exception("Failed to sample database: %s", exc)
         return 1
 
     return 0

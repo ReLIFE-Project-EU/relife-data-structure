@@ -1,3 +1,7 @@
+"""
+A script to generate data profiling reports from various types of data files.
+"""
+
 import json
 import logging
 import sqlite3
@@ -7,24 +11,14 @@ from typing import Dict, List
 import pandas as pd
 from mdutils.mdutils import MdUtils
 from rich.console import Console
-from rich.logging import RichHandler
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from ydata_profiling import ProfileReport
 
+from logging_setup import configure_logging
+
 console = Console()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[
-        RichHandler(
-            rich_tracebacks=True,
-            markup=True,
-            console=console,
-        )
-    ],
-)
+configure_logging(verbose=False, console=console)
 
 logger = logging.getLogger(__name__)
 
