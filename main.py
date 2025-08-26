@@ -105,12 +105,21 @@ def generate_profiling_reports(
 
 
 def find_data_files(directory: Path, extensions: List[str]) -> List[Path]:
-    """Find all data files with the specified extensions in the directory."""
+    """Find all data files with the specified extensions.
+
+    Searches for files located directly under the provided directory and
+    recursively within any subdirectories.
+    """
 
     files = []
 
+    # Files directly under the directory
     for ext in extensions:
-        files.extend(list(directory.glob("*%s" % ext)))
+        files.extend(directory.glob("*%s" % ext))
+
+    # Files under any subdirectories (recursive)
+    for ext in extensions:
+        files.extend(directory.glob("**/*%s" % ext))
 
     return files
 
