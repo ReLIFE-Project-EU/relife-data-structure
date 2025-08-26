@@ -5,6 +5,7 @@ reports
 .vscode
 .claude
 TEMP-*.md
+samples/.sqlite3
 
 ## Python
 #########
