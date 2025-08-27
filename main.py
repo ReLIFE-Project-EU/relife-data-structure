@@ -55,6 +55,22 @@ def read_parquet_file(file_path: Path) -> Dict[str, pd.DataFrame]:
     return {"data": pd.read_parquet(file_path)}
 
 
+def read_excel_file(file_path: Path) -> Dict[str, pd.DataFrame]:
+    """Read an Excel (.xlsx) file into a dict of DataFrames keyed by sheet name."""
+
+    dataframes: Dict[str, pd.DataFrame] = {}
+
+    # Use ExcelFile for efficient multi-sheet access and explicit engine
+    xls = pd.ExcelFile(file_path, engine="openpyxl")
+    for sheet_name in xls.sheet_names:
+        dataframes[str(sheet_name)] = pd.read_excel(
+            xls, sheet_name=sheet_name, engine="openpyxl"
+        )
+
+    # When the workbook is empty (no sheets), return an empty dict
+    return dataframes
+
+
 def read_data_file(file_path: Path) -> Dict[str, pd.DataFrame]:
     """Read a data file based on its extension."""
 
@@ -64,6 +80,7 @@ def read_data_file(file_path: Path) -> Dict[str, pd.DataFrame]:
         ".sqlite": read_sqlite_file,
         ".csv": read_csv_file,
         ".parquet": read_parquet_file,
+        ".xlsx": read_excel_file,
     }
 
     if file_extension not in readers:
@@ -91,6 +108,12 @@ def generate_profiling_reports(
             task = progress.add_task(
                 f"Generating profile report for table: {table_name}", total=None
             )
+
+            # Skip empty DataFrames to avoid profiling errors
+            if df is None or getattr(df, "empty", False):
+                progress.update(task, description=f"Skipped empty table {table_name}")
+                logger.warning("Skipping %s: empty DataFrame", table_name)
+                continue
 
             profile = ProfileReport(df, title="Profile Report - %s" % table_name)
             output_file_html = output_dir / f"{table_name}_profile.html"
@@ -128,7 +151,7 @@ def main():
     output_dir = Path("reports")
 
     # Supported file extensions
-    supported_extensions = [".sqlite", ".csv", ".parquet"]
+    supported_extensions = [".sqlite", ".csv", ".parquet", ".xlsx"]
 
     # Find all supported data files
     data_files = find_data_files(samples_dir, supported_extensions)
