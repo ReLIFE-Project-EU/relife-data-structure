@@ -55,6 +55,87 @@ def read_parquet_file(file_path: Path) -> Dict[str, pd.DataFrame]:
     return {"data": pd.read_parquet(file_path)}
 
 
+def read_hdf5_file(file_path: Path) -> Dict[str, pd.DataFrame]:
+    """Read an HDF5 file into a dictionary of DataFrames.
+
+    Strategy:
+    1) Try treating the file as a pandas HDFStore and read each key.
+    2) Fallback to PyTables traversal, converting Table and 1D/2D Arrays into DataFrames.
+    """
+
+    dataframes: Dict[str, pd.DataFrame] = {}
+
+    # Attempt pandas HDFStore first (handles files created with pandas.to_hdf)
+    try:
+        with pd.HDFStore(str(file_path), mode="r") as store:  # type: ignore[attr-defined]
+            keys = list(store.keys())
+            for key in keys:
+                try:
+                    df = store.select(key)
+                except Exception:
+                    df = pd.read_hdf(str(file_path), key)
+                if isinstance(df, pd.DataFrame):
+                    safe_key = key.strip("/").replace("/", "__") or "root"
+                    dataframes[safe_key] = df
+        if dataframes:
+            return dataframes
+    except Exception as e:  # Not a pandas HDFStore or failed to read via pandas
+        logger.debug("HDF5 not readable via pandas HDFStore: %s", e)
+
+    # Fallback: use PyTables to traverse generic HDF5 structure
+    try:
+        import tables as tb  # Lazy import to avoid hard dependency at module import
+
+        with tb.open_file(str(file_path), mode="r") as h5:
+            for leaf in h5.walk_nodes("/", classname="Leaf"):
+                path = str(leaf._v_pathname)
+                safe_key = path.strip("/").replace("/", "__") or getattr(
+                    leaf, "_v_name", "dataset"
+                )
+
+                if isinstance(leaf, tb.Table):
+                    try:
+                        arr = leaf.read()
+                        df = pd.DataFrame.from_records(arr)
+                        dataframes[safe_key] = df
+                    except Exception as exc:
+                        logger.warning("Skipping HDF5 Table %s: %s", path, exc)
+                    continue
+
+                if isinstance(leaf, (tb.Array, tb.CArray, tb.EArray)):
+                    try:
+                        data = leaf.read()
+                        # Only convert 1D/2D arrays to DataFrame
+                        if getattr(data, "ndim", 0) == 1:
+                            col_name = getattr(leaf, "_v_name", "value")
+                            df = pd.DataFrame({str(col_name): data})
+                            dataframes[safe_key] = df
+                        elif getattr(data, "ndim", 0) == 2:
+                            ncols = (
+                                int(data.shape[1])
+                                if data.shape and len(data.shape) > 1
+                                else 1
+                            )
+                            cols = [f"col_{i}" for i in range(ncols)]
+                            df = pd.DataFrame(data, columns=cols)
+                            dataframes[safe_key] = df
+                        else:
+                            logger.debug(
+                                "Skipping array with ndim=%s at %s",
+                                getattr(data, "ndim", None),
+                                path,
+                            )
+                    except Exception as exc:
+                        logger.warning("Skipping HDF5 Array %s: %s", path, exc)
+                    continue
+
+                # Other leaf types are skipped
+        return dataframes
+    except Exception as e:
+        logger.error("Failed to read HDF5 file %s: %s", file_path, e)
+        return {}
+
+
 def read_excel_file(file_path: Path) -> Dict[str, pd.DataFrame]:
     """Read an Excel (.xlsx) file into a dict of DataFrames keyed by sheet name."""
 
@@ -80,6 +161,9 @@ def read_data_file(file_path: Path) -> Dict[str, pd.DataFrame]:
         ".sqlite": read_sqlite_file,
         ".csv": read_csv_file,
         ".parquet": read_parquet_file,
+        ".h5": read_hdf5_file,
+        ".hdf5": read_hdf5_file,
+        ".hdf": read_hdf5_file,
         ".xlsx": read_excel_file,
     }
 
@@ -151,7 +235,15 @@ def main():
     output_dir = Path("reports")
 
     # Supported file extensions
-    supported_extensions = [".sqlite", ".csv", ".parquet", ".xlsx"]
+    supported_extensions = [
+        ".sqlite",
+        ".csv",
+        ".parquet",
+        ".h5",
+        ".hdf5",
+        ".hdf",
+        ".xlsx",
+    ]
 
     # Find all supported data files
     data_files = find_data_files(samples_dir, supported_extensions)
