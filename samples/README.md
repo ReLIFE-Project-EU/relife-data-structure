@@ -67,3 +67,32 @@ An Excel workbook with one sheet (`Tabelle1`) listing equipment/system component
 Columns include: `Country`, `Source`, `System type`, `Component`, `Price includes (Material, Labour, Taxes, Scaffolding, OPEX)`, `Material`, `Thickness [cm]`, `Lambda [W/mK]`, `Uw [W/m²K]`, `sCOP`, `Power [kW]`, `T emission [°C]`, `Efficiency`, `Collectors`, `Panel size [m²]`, `Capacity [L]`, `Single/double`, `Price [€/m²]`, `Price [€]`, `Comment`.
 
 
+### SmartMeter energy use in London households (CSV, Excel)
+
+Files: `london_smartmeter_energy_data/CC_LCL-FullData_sample.csv`, `london_smartmeter_energy_data/Tariffs.xlsx`  
+See also: `london_smartmeter_energy_data/README.md`
+
+Half‑hourly household electricity consumption readings for London households. The CSV contains anonymized household IDs, tariff group labels, timestamps, and consumption values in kWh per half‑hour. An accompanying Excel workbook lists the dynamic time‑of‑use price signal schedule used in the 2013 trial (High/Low/Normal) with applicable dates/times.
+
+Columns include (CSV): `LCLid` (household ID), `stdorToU` (standard vs time‑of‑use group), `DateTime` (timestamp), `KWH/hh (per half hour)` (consumption in kWh).
+
+
+### Three years of hourly data from Danish smart heat meters (CSV)
+
+Files: `danish_smart_heat_meter_data/processed_final_data_sample.csv`, `danish_smart_heat_meter_data/contextual_data.csv`  
+See also: `danish_smart_heat_meter_data/README.md`
+
+Processed hourly heat consumption series and contextual building metadata. The processed sample provides equidistant hourly measurements per meter, while the contextual file lists meter/building attributes.
+
+Columns include (processed sample): `customer_id`, `meter_id`, `time_rounded` (UTC timestamp), `energy_heat_kwh`, `volume_flow_m3`, `inlet_flow_energy_m3xC`, `back_flow_energy_m3xC`.
+
+Columns include (contextual): `meter_id`, `customer_id`, `unit_type`, `construction_year`, `energy_label`.
+
+
+### Lower Saxony residential electric load (HDF5)
+
+Files: `lower_saxony_electric_load/2018_data_60min.hdf5`, `lower_saxony_electric_load/2018_data_spatial.hdf5`, `lower_saxony_electric_load/2018_district_heating_grid.hdf5`, `lower_saxony_electric_load/2018_weather.hdf5`  
+See also: `lower_saxony_electric_load/README.md`
+
+Electric load measurements from 38 households in Lower Saxony, Germany, provided at multiple temporal resolutions and spatial aggregations. These HDF5 files contain 2018 subsets, including 60‑minute time‑series, spatial aggregations, district heating grid information, and weather variables used alongside the load data.
+
