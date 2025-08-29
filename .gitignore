@@ -6,6 +6,7 @@ reports
 .claude
 TEMP-*.md
 samples/.sqlite3
+.kiro
 
 ## Python
 #########
