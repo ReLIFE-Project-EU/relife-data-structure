@@ -15,4 +15,9 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["black>=25.1.0", "isort>=6.0.1"]
+dev = [
+    "black>=25.1.0",
+    "isort>=6.0.1",
+    "pytest>=8.0.0",
+    "psutil>=5.9.0",
+]
