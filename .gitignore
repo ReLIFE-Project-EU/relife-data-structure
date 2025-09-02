@@ -2,6 +2,7 @@
 #######
 
 reports
+consolidated_reports/
 .vscode
 .claude
 TEMP-*.md

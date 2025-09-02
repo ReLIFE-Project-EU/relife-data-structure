@@ -49,7 +49,7 @@ Examples:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("consolidated_report.md"),
+        default=Path("consolidated_reports") / "consolidated_report.md",
         help="Output file path for the consolidated report (default: consolidated_report.md)"
     )
     

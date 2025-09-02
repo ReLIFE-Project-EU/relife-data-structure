@@ -277,7 +277,7 @@ class ConsolidationResult:
 class ConsolidatorConfig:
     """Configuration for the EDA Report Consolidator."""
     reports_directory: Path = Path("reports")  # Requirement 5.1 - no manual configuration needed
-    output_file: Path = Path("consolidated_report.md")
+    output_file: Path = Path("consolidated_reports") / "consolidated_report.md"
     quality_thresholds: QualityThresholds = field(default_factory=QualityThresholds)
     max_report_length: int = 10000  # characters - supports Requirement 7.5 (10-minute review)
     include_detailed_appendix: bool = True  # Requirement 7.4
