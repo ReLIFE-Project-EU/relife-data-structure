@@ -17,8 +17,17 @@ tasks:
     cmds:
       - uv run main.py
 
+  consolidate:
+    deps:
+      - virtualenv
+    desc: Consolidate the data profiling reports into a single report
+    cmds:
+      - uv run consolidate_reports.py
+
   clean:
     desc: Remove all generated reports from the reports directory
     cmds:
       - cmd: rm -rf reports/*
+        ignore_error: true
+      - cmd: rm -rf consolidated_reports/*
         ignore_error: true
