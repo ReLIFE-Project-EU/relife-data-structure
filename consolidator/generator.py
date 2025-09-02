@@ -7,7 +7,7 @@ including executive summaries, quality assessments, and detailed appendices.
 
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from .models import (
     ColumnNamingAnalysis,
@@ -460,26 +460,48 @@ class ReportGenerator:
             "This appendix contains comprehensive details for all analyzed datasets."
         )
 
-        # Complete quality issues list
+        # Complete quality issues list (compact and grouped)
         sections.append("\n## Complete Quality Issues List")
         if quality_issues:
+            # Group issues by severity for quick scanning
+            severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+            grouped: Dict[str, List[QualityIssue]] = {
+                "critical": [],
+                "high": [],
+                "medium": [],
+                "low": [],
+            }
             for issue in quality_issues:
-                sections.append(
-                    f"\n### {issue.dataset_name} - {issue.severity.upper()}"
-                )
-                sections.append(f"**Type:** {issue.issue_type}")
-                sections.append(f"**Description:** {issue.description}")
-                sections.append(f"**Recommendation:** {issue.recommendation}")
+                sev = issue.severity.lower() if issue.severity else "medium"
+                grouped.setdefault(sev, []).append(issue)
 
-                if issue.affected_columns:
-                    sections.append(
-                        f"**Affected Columns:** {', '.join(issue.affected_columns)}"
+            # Summary line
+            total_counts = {k: len(v) for k, v in grouped.items()}
+            summary_parts = []
+            for sev in ["critical", "high", "medium", "low"]:
+                if total_counts.get(sev):
+                    summary_parts.append(f"{total_counts[sev]} {sev}")
+            if summary_parts:
+                sections.append("**Issue counts:** " + ", ".join(summary_parts))
+
+            # Render per-severity compact tables
+            for sev in sorted(grouped.keys(), key=lambda s: severity_order.get(s, 4)):
+                issues_in_group = grouped.get(sev, [])
+                if not issues_in_group:
+                    continue
+                sections.append(f"\n### {sev.title()} Issues ({len(issues_in_group)})")
+                header = "| Dataset | Type | Affected Columns | Description | Metrics |\n|---|---|---|---|---|"
+                rows: List[str] = []
+                for iss in sorted(
+                    issues_in_group, key=lambda x: (x.issue_type, x.dataset_name)
+                ):
+                    cols = self._format_compact_columns(iss.affected_columns)
+                    desc = self._truncate(self._escape_pipes(iss.description), 160)
+                    metrics = self._format_compact_metrics(iss.metrics)
+                    rows.append(
+                        f"| {iss.dataset_name} | {iss.issue_type.replace('_',' ').title()} | {cols} | {desc} | {metrics} |"
                     )
-
-                if issue.metrics:
-                    sections.append("**Detailed Metrics:**")
-                    for metric, value in issue.metrics.items():
-                        sections.append(f"- {metric}: {value}")
+                sections.append("\n".join([header] + rows))
         else:
             sections.append("No quality issues identified.")
 
@@ -559,6 +581,32 @@ class ReportGenerator:
                     sections.append(f"- {rec}")
 
         return "\n".join(sections)
+
+    # ---------- Appendix helpers for compact rendering ----------
+    def _truncate(self, text: str, max_len: int) -> str:
+        """Truncate text safely for tables, appending ellipsis when needed."""
+        if text is None:
+            return ""
+        if len(text) <= max_len:
+            return text
+        return text[: max_len - 1].rstrip() + "…"
+
+    def _format_compact_columns(self, columns: List[str]) -> str:
+        """Render affected columns compactly (up to 3 shown)."""
+        if not columns:
+            return "-"
+        if len(columns) <= 3:
+            return ", ".join(columns)
+        return ", ".join(columns[:3]) + f" (+{len(columns) - 3})"
+
+    def _format_compact_metrics(self, metrics: Dict[str, float]) -> str:
+        """Render metrics as key:value pairs, up to 3, compact."""
+        if not metrics:
+            return "-"
+        items = list(metrics.items())[:3]
+        formatted = [f"{k}:{v}" for k, v in items]
+        more = len(metrics) - len(items)
+        return ", ".join(formatted) + (f" (+{more})" if more > 0 else "")
 
     def _apply_length_limits(self, content: str, max_length: int) -> str:
         """Apply length management to stay under reading time limits."""
