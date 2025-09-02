@@ -8,7 +8,7 @@ A small toolkit used in ReLIFE Task 2.1 to profile sample datasets and consolida
 > The `reports/` and `consolidated_reports/` directories are generated locally and are gitignored, so they may not exist until you run the tools.
 
 - **Samples and example outputs**: Data samples in `samples/` and example profiling outputs in `reports/`.
-- **Report generator (`main.py`)**: Scans `samples/` for supported files and creates [YData Profiling] reports (HTML + JSON) under `reports/`, mirroring the folder structure.
+- **Report generator (`main.py`)**: Scans `samples/` for supported files and creates reports (HTML + JSON) under `reports/`, mirroring the folder structure.
 - **Consolidator (`consolidate_reports.py`)**: Reads the JSON profiling outputs and produces a concise Markdown report with prioritized issues and an optional appendix.
 - **Consolidation engine (`consolidator/`)**: Scanner, parser, analyzer, quality checks, templates, and orchestrator that power the consolidation workflow.
 - **Automation**: `Taskfile.yml` tasks for setup and running; `tests/` for basic coverage.
@@ -55,3 +55,7 @@ uv run consolidate_reports.py --help
 - `consolidator/`: Core modules (scanner, parser, analyzer, quality, generator, orchestrator, templates).
 - `Taskfile.yml`: Common tasks (`uv sync`, run, clean).
 - `tests/`: Pytest-based tests for core functionality.
+
+## Citations
+
+This Exploratory Data Analysis pipeline uses the [YData Profiling package](https://docs.profiling.ydata.ai/latest/), which automates and standardizes the creation of detailed reports.
