@@ -52,6 +52,20 @@ An Excel workbook with one sheet (`Tabelle1`) listing equipment/system component
 
 Columns include: `Country`, `Source`, `System type`, `Component`, `Price includes (Material, Labour, Taxes, Scaffolding, OPEX)`, `Material`, `Thickness [cm]`, `Lambda [W/mK]`, `Uw [W/m²K]`, `sCOP`, `Power [kW]`, `T emission [°C]`, `Efficiency`, `Collectors`, `Panel size [m²]`, `Capacity [L]`, `Single/double`, `Price [€/m²]`, `Price [€]`, `Comment`.
 
+### Longtable CAPEX — new version (Excel)
+
+File: `longtable_capex_new.xlsx`
+
+Updated workbook with two sheets. The `Foglio1` sheet contains CAPEX entries with technical and price attributes; the `Structure` sheet documents the schema.
+
+Columns include (Foglio1): `Country`, `Region`, `Renovation work`, `Material`, `Thickness [cm]`, `Lambda [mK/W]`, `Uw [W/m2K]`, `Power [kW]`, `Solar collector area [m2]`, `Capacity [l]`, `Price [€/m2]`, `Price [€]`, `Source Author, Title, Year`, `Source link`.
+
+Differences vs `longtable_capex.xlsx`:
+- Sheets: `Tabelle1` renamed to `Foglio1`; additional `Structure` sheet added.
+- Columns: reduced from 20 to 18 (15 named + 3 unnamed trailing columns); new fields include `Region`, `Renovation work`, `Source Author, Title, Year`, `Source link`. Fields removed from the previous version: `System type`, `Component`, `Price includes (Material, Labour, Taxes, Scaffolding, OPEX)`, `sCOP`, `T emission [°C]`, `Efficiency`, `Collectors`, `Single/double`, `Comment`, `Source`.
+- Units/labels: `Lambda` now `[mK/W]` (was `[W/mK]`); `Uw` now `[W/m2K]` (was `[W/m²K]`); `Panel size [m²]` replaced by `Solar collector area [m2]`; `Capacity [L]` now `Capacity [l]`; `Price [€/m²]` now `Price [€/m2]`.
+- Columns to ignore: the first column `0` is an index column; three trailing `Unnamed` columns are likely empty and can be dropped when loading.
+
 ### SmartMeter energy use in London households (CSV, Excel)
 
 Files: `london_smartmeter_energy_data/CC_LCL-FullData_sample.csv`, `london_smartmeter_energy_data/Tariffs.xlsx`  
