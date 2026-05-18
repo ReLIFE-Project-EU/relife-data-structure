@@ -39,7 +39,7 @@ License-Text: https://spdx.org/licenses/CC-BY-4.0.html
 
 ## How To Cite
 
-Nikolaus Diez, Simon Pezzutto, ReLIFE-open-data-set-data-collection (May 2026) 
+Nikolaus Diez, Simon Pezzutto, ReLIFE Dataset Metadata, ReLIFE-open-data-set-data-collection (May 2026) 
 
 ## Authors And Reviewers
 
