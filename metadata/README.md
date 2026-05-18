@@ -37,16 +37,10 @@ SPDX-License-Identifier: CC-BY-4.0
 
 License-Text: https://spdx.org/licenses/CC-BY-4.0.html
 
-**[Go To Top](#top)**
-
 ## How To Cite
 
 Nikolaus Diez, Simon Pezzutto, ReLIFE-open-data-set-data-collection (May 2026) 
 
-**[Go To Top](#top)**
-
 ## Authors And Reviewers
 
 This page and dataset was collected and written by Nikolaus Diez (EEG - TU Wien) and Simon Pezzutto (EURAC). This page was reviewed by Simon Pezzutto (EURAC). 
-
-**[Go To Top](#top)**
