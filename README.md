@@ -8,6 +8,7 @@ A small toolkit used in ReLIFE Task 2.1 to profile sample datasets and consolida
 > The `reports/` and `consolidated_reports/` directories are generated locally and are gitignored, so they may not exist until you run the tools.
 
 - **Samples and example outputs**: Data samples in `samples/` and example profiling outputs in `reports/`.
+- **Dataset metadata**: Public metadata catalogues and FAIR/data-quality assessment fields in `metadata/`.
 - **Report generator (`main.py`)**: Scans `samples/` for supported files and creates reports (HTML + JSON) under `reports/`, mirroring the folder structure.
 - **Consolidator (`consolidate_reports.py`)**: Reads the JSON profiling outputs and produces a concise Markdown report with prioritized issues and an optional appendix.
 - **Consolidation engine (`consolidator/`)**: Scanner, parser, analyzer, quality checks, templates, and orchestrator that power the consolidation workflow.
@@ -49,6 +50,7 @@ uv run consolidate_reports.py --help
 ## Repository structure
 
 - `samples/`: Input data samples used for validation.
+- `metadata/`: Public dataset metadata catalogues used for FAIR and data-quality assessment.
 - `reports/`: Generated per-dataset profiling outputs (HTML + JSON).
 - `consolidate_reports.py`: CLI to produce the consolidated Markdown report.
 - `main.py`: Creates profiling reports from discovered data files.
