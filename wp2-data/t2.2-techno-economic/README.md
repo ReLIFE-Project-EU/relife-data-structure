@@ -5,12 +5,12 @@ A collection of costs data for the most relevant energy renovation intervations 
 
 ## Authors
 
-Libardoni Giovanni, Simon Pezzutto, Kseniia Shkirman (EURAC Research)
+Giovanni Libardoni, Simon Pezzutto, Kseniia Shkirman (EURAC Research)
 ## Creative Commons Attribution 4.0 International
 
 ## License
 
-Copyright © 2016-2018: Simon Pezzutto simon.pezzutto@eurac.edu
+Copyright ©: Simon Pezzutto simon.pezzutto@eurac.edu
 Creative Commons Attribution 4.0 International License This work is licensed under a Creative Commons CC BY 4.0 International License.
 SPDX-License-Identifier: CC-BY-4.0
 License-Text: https://spdx.org/licenses/CC-BY-4.0.html
