@@ -3,6 +3,19 @@
 
 A collection of data of the building stock of all the EU 27 Member States
 
+## Authors
+
+Libardoni Giovanni, Simon Pezzutto, Koniaieva Yelyzaveta, Kseniia Shkirman (EURAC Research), Diez, Nikolaus Heiner, Lukas Kranzl (TUW), Camila Canelas (ECO), Petra Pomper (IEECP)
+
+## Creative Commons Attribution 4.0 International
+
+## License
+
+Copyright © 2016-2018: Simon Pezzutto simon.pezzutto@eurac.edu
+Creative Commons Attribution 4.0 International License This work is licensed under a Creative Commons CC BY 4.0 International License.
+SPDX-License-Identifier: CC-BY-4.0
+License-Text: https://spdx.org/licenses/CC-BY-4.0.html
+
 
 ## Methodology
 Data collection has been performed on a country-by-country basis and systematically structured within both the residential and service sectors. This organized methodology ensures that specific building categories and individual construction periods are comprehensively considered and properly represented.
