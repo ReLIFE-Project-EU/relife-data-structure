@@ -15,7 +15,7 @@ Creative Commons Attribution 4.0 International License This work is licensed und
 SPDX-License-Identifier: CC-BY-4.0
 License-Text: https://spdx.org/licenses/CC-BY-4.0.html
 
-## Methodology
+## Content
 
 This project has identified the most relevant intervention for building renovation. Firstly, the interventions related to the building envelope:
 
@@ -26,7 +26,8 @@ This project has identified the most relevant intervention for building renovati
 | Roof insulation - Accessible | Cost of roof insulation in case of the accessible attic, including insulation material cost and labour cost.            |
 | Roof insulation - Makeover   | Total cost of roof insulation, including insulation material, roof removal, additional elements cost and labour cost.   |
 | Floor insulation             | Total cost of insulating the floor, including insulation material cost, additional components cost and labour cost.     |
-| Windows                      | Cost of purchasing and installation of a new window.                                                                    |
+| Windows                      | Cost of purchasing and installation of a new window.                                                 
+
 which are characterized by the following parameters:
 - material type
 - thickness of insulation layer [cm]
