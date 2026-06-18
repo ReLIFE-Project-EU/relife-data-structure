@@ -6,6 +6,11 @@ A collection of costs data for the most relevant energy renovation intervations 
 ## Authors
 
 Giovanni Libardoni, Simon Pezzutto, Kseniia Shkirman (EURAC Research)
+
+## How to cite
+
+Giovanni Libardoni, Simon Pezzutto, Kseniia Shkirman, ReLIFE CAPEX & OPEX, 2026, https://github.com/ReLIFE-Project-EU/relife-data-structure/tree/main/wp2-data/t2.2-techno-economic
+
 ## Creative Commons Attribution 4.0 International
 
 ## License
