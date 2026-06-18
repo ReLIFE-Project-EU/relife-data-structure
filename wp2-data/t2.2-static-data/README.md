@@ -5,7 +5,10 @@ A collection of data of the building stock of all the EU 27 Member States
 
 ## Authors
 
-Giovanni Libardoni, Simon Pezzutto, Yelyzaveta Koniaieva, Kseniia Shkirman (EURAC Research), Nikolaus Heiner Diez, Lukas Kranzl (TUW), Camila Canelas (ECO), Petra Pomper (IEECP)
+Giovanni Libardoni, Simon Pezzutto, Yelyzaveta Koniaieva, Kseniia Shkirman (EURAC Research), Nikolaus Heiner Diez, Lukas Kranzl (TUW), Camila Canelas (ECOSERVEIS), Petra Pomper (IEECP)
+
+## How to cite
+Giovanni Libardoni, Simon Pezzutto, Yelyzaveta Koniaieva, Kseniia Shkirman, Nikolaus Heiner Diez, Lukas Kranzl, Camila Canelas, Petra Pomper, ReLIFE Building Stock Analysis, 2026, https://github.com/ReLIFE-Project-EU/relife-data-structure/tree/main/wp2-data/t2.2-static-data
 
 ## Creative Commons Attribution 4.0 International
 
